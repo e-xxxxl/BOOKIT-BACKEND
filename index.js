@@ -17,10 +17,9 @@ app.use(express.urlencoded({ extended: true, limit: "100mb" })); // Then URL enc
 
 // ✅ FIXED: Added your signup URL
 const allowedOrigins = [
-  "https://bookit-app-topaz.vercel.app",
-  "https://bookit-app-vn3p.vercel.app", // ← Your signup URL
-  "http://localhost:5173",
-  "http://localhost:3000"
+  "https://bookit-remastered.vercel.app/",
+  "https://bookit-remastered.vercel.app/", // ← Your signup URL
+  "http://localhost:5173"
 ];
 
 // CORS config
