@@ -11,18 +11,13 @@ const mongoose = require("mongoose");
 // Load environment variables first
 require("dotenv").config();
 
-// ✅ FIXED: Correct middleware order
-app.use(express.json()); // Parse JSON first
-app.use(express.urlencoded({ extended: true, limit: "100mb" })); // Then URL encoded
-
-// ✅ FIXED: Added your signup URL
+// ✅ FIXED: Correct allowed origins (no trailing slashes)
 const allowedOrigins = [
-  "https://bookit-remastered.vercel.app/",
-  "https://bookit-remastered.vercel.app/", // ← Your signup URL
+  "https://bookit-remastered.vercel.app",  // ← No trailing slash
   "http://localhost:5173"
 ];
 
-// CORS config
+// ✅ FIXED: CORS config with proper preflight handling
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, curl, etc.)
@@ -40,6 +35,10 @@ app.use(cors({
   credentials: true,
   optionsSuccessStatus: 200
 }));
+
+// ✅ IMPORTANT: Parse JSON after CORS
+app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 
 // Connect to MongoDB
 const URI = process.env.MONGO_DB_URI;
@@ -73,12 +72,12 @@ app.get('/', (req, res) => {
   res.json({ message: 'BookIt API is running!', timestamp: new Date().toISOString() });
 });
 
-// 404 handler - Move this BEFORE error handling middleware
+// 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ message: `Route ${req.originalUrl} not found` });
 });
 
-// Error handling middleware - MUST be last
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err.stack);
   res.status(500).json({ message: err.message || 'Something went wrong!' });
